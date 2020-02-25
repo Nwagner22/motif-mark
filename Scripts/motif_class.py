@@ -9,39 +9,43 @@ motif class that handles the motif coordinates and exon cooordinates
 for illustrating the different motifs per record
 """
 
-import cairo
 
 
 class motif:
 
     header = ""
     sequence = ""
-    motif_sequence = ""
-    motif_length = 0
+    motif_sequences = []
     motif_coordinates = []
+    motif_counts = []
     exon_coordinates = []
-    motif_count = 0
 
-    def __init__(self, motif_seq, header, sequence):
-        self.motif_sequence = motif_seq
-        self.motif_length = len(motif_seq)
+    def __init__(self, header, sequence):
         self.header = header
         self.sequence = sequence
 
     
+    def add_exon(self, list_of_coordinates):
+        """
 
-    def add_exon(self):
-        pass
+        """
+        self.exon_coordinates = list_of_coordinates
 
+    def add_motif_coordinates(self, list_of_coordinates):
+        """
+        
+        """
+        self.motif_coordinates = list_of_coordinates
 
-    def add_motif(self):
-        pass
+    def add_motif_sequences(self, list_of_sequences):
+        """
+        
+        """
+        self.motif_sequences = list_of_sequences
 
-
-    def draw(self):
-        pass
-
-    def test(self):
-        print(self.motif_sequence)
-
+    def add_motif_counts(self, list_of_counts):
+        """
+        
+        """
+        self.motif_counts = list_of_counts
 
