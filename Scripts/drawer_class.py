@@ -1,9 +1,12 @@
 
 import cairo
+import math
 
 class drawer:
 
     list_of_motif_objects = []
+    list_of_motifs = []
+    width_of_legend = 150
     width = 0
     height = 0
     width_of_motif = 2
@@ -11,9 +14,10 @@ class drawer:
     number_of_motifs = 0
 
 
-    def __init__(self, list_of_motif_objects, num_motifs):
+    def __init__(self, list_of_motif_objects, num_motifs, given_motifs):
         self.list_of_motif_objects = list_of_motif_objects
         self.number_of_motifs = num_motifs
+        self.list_of_motifs = given_motifs
 
     
     def draw(self):
@@ -33,11 +37,58 @@ class drawer:
         line_depth = 125
         header_depth = 75
 
+        ## Create color palette
+        color_palette = [[],[],[]]
+        num_colors_per = self.number_of_motifs//3
+        max_num_colors_per = self.number_of_motifs - (2 * num_colors_per)
+        gradient = 1/num_colors_per
+        max_gradient = 1/max_num_colors_per
+        # color_gradient_value = 
+        for i in range(3):
+            if i == 2:
+                for k in range(1,max_num_colors_per + 1):
+                    color_palette[i].append(k*max_gradient)
+            else:
+                for k in range(1,num_colors_per + 1):
+                    color_palette[i].append(k*gradient)
+        print(max_num_colors_per)
+        print(color_palette)
+
+
         ## Legend
-        ctx.rectangle((self.width/2) + 100, 15, 200, 50)
+        # ctx.rectangle((self.width/2) + 100, 15, 200, 50)
+        # ctx.set_source_rgb(0,0,0)
+        # ctx.set_line_width(1)
+        # ctx.stroke()
+        x_legend = self.width - self.width_of_legend
+        y_legend = 75
+        legend_width = 145
+        legend_height = self.number_of_motifs * 18
+        ctx.rectangle(x_legend,y_legend,legend_width,legend_height)
         ctx.set_source_rgb(0,0,0)
-        ctx.set_line_width(1)
         ctx.stroke()
+        legend_line_length = 35
+        count = 1
+        for i in range(3):
+            for j in range(len(color_palette[i])):
+                ctx.move_to(x_legend + 5, y_legend + (count*15))
+                ctx.line_to(x_legend + legend_line_length, y_legend + (count*15))
+                if i == 0:
+                    ctx.set_source_rgb(color_palette[i][j],0,0)
+                if i == 1:
+                    ctx.set_source_rgb(0,color_palette[i][j],0)
+                if i == 2:
+                    ctx.set_source_rgb(0,0,color_palette[i][j])
+                ctx.stroke()
+
+                ctx.move_to((x_legend + legend_line_length) + 10, y_legend + (count*15))
+                ctx.set_font_size(10)
+                ctx.select_font_face("Arial",cairo.FONT_SLANT_NORMAL,cairo.FONT_WEIGHT_NORMAL)
+                ctx.set_source_rgb(0,0,0)
+                ctx.show_text(self.list_of_motifs[count-1])
+
+                count += 1
+
 
 
         for i in range(len(self.list_of_motif_objects)):
@@ -47,7 +98,7 @@ class drawer:
             current_motif_sequences = current_motif_obj.motif_sequences
             current_exon_coords = current_motif_obj.exon_coordinates
 
-            width_left = self.width - current_length_of_seq
+            width_left = self.width - current_length_of_seq - self.width_of_legend
             
             ## Draw main sequence line
             ctx.move_to(width_left/2,(i*line_spacing) + line_depth)  
@@ -73,19 +124,18 @@ class drawer:
             for j in range(len(current_motif_coords)):
                 ctx.move_to((width_left/2) + current_motif_coords[j][0],(i*line_spacing) + line_depth)  
                 ctx.line_to((width_left/2) + current_motif_coords[j][0] + 2,(i*line_spacing) + line_depth)
-                if(current_motif_coords[j][2] == 0):
-                    ctx.set_source_rgb(0,0,255)
-                if(current_motif_coords[j][2] == 1):
-                    ctx.set_source_rgb(0,255,0)
-                if(current_motif_coords[j][2] == 2):
-                    ctx.set_source_rgb(1,.6,0)
-                if(current_motif_coords[j][2] == 3):
-                    ctx.set_source_rgb(255,0,0)
+                motif_num = current_motif_coords[j][2]
+                if(motif_num < num_colors_per):
+                    ctx.set_source_rgb(color_palette[0][motif_num],0,0)
+                if(motif_num >= num_colors_per and motif_num < (2*num_colors_per)):
+                    ctx.set_source_rgb(0,color_palette[1][motif_num-num_colors_per],0)
+                if(motif_num >= (2*num_colors_per)):
+                    ctx.set_source_rgb(0,0,color_palette[2][motif_num-(2*num_colors_per)])
                 ctx.set_line_width(15)
                 ctx.stroke()
 
             ## adding header text
-            ctx.move_to(50, (i*line_spacing) + header_depth)
+            ctx.move_to(width_left/2, (i*line_spacing) + header_depth)
             ctx.set_font_size(17)
             ctx.select_font_face("Arial",cairo.FONT_SLANT_NORMAL,cairo.FONT_WEIGHT_NORMAL)
             ctx.set_source_rgb(0,0,0)
@@ -124,8 +174,10 @@ class drawer:
             current_object = self.list_of_motif_objects[i]
             if(len(current_object.sequence) > current_longest):
                 current_longest = len(current_object.sequence)
+        
+        width_for_drawing = current_longest + 50 + 15 
 
-        self.width = current_longest + 50 + 50
+        self.width = width_for_drawing + self.width_of_legend
 
 
     def calc_height(self):

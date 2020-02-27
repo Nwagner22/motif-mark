@@ -23,54 +23,29 @@ def get_args():
 args = get_args()
 FASTA_FILE = args.fasta
 MOTIF_FILE = args.motif
+LIST_OF_GIVEN_MOTIFS = []
 LIST_OF_GIVEN_MOTIF_EXPRESSIONS = []
 LIST_OF_GIVEN_MOTIF_LENGTHS = []
 LIST_OF_MOTIF_OBJECTS = []
 NUMBER_OF_MOTIFS = 0
 
-nucleac_acid_dict = {'y':'[tcu]', 'Y':'[TCU]', 'U':'[UT]', 'u':'[ut]',
-                     's':'[cg]', 'S':'[CG]', 'm':'[ac]', 'M':'[AC]',
-                     'k':'[gtu]', 'K':'[GTU]', 'r':'[ag]', 'R':'[AG]',
-                     'w':'[atu]', 'W':'[ATU]'}
+nucleac_acid_dict = {'y':'[tcuTCU]', 'u':'[utUT]','s':'[cgCG]', 'm':'[acAC]',
+                     'k':'[gtuGTU]', 'r':'[agAG]', 'w':'[atuATU]', 'a':'[aA]',
+                     'c':'[cC]', 'g':'[gG]', 't':'[utUT]', 'b':'[cgtuCGTU]',
+                     'd':'[agtuAGTU]', 'h':'[actuACTU]', 'v':'[acgACG]',
+                     'n':'acgtuACGTU'}
 
 with open(MOTIF_FILE, 'r') as motifFile:
     for line in motifFile:
         line = line.strip()
+        LIST_OF_GIVEN_MOTIFS.append(line)
 
         current_length = len(line)
+        line = line.lower()
 
         current_motif = ""
         for letter in line:
-            if letter == 'y':
-                current_motif += nucleac_acid_dict['y']
-            elif letter == 'Y':
-                current_motif += nucleac_acid_dict['Y']
-            elif letter == 'U':
-                current_motif += nucleac_acid_dict['U']
-            elif letter == 'u':
-                current_motif += nucleac_acid_dict['u']
-            elif letter == 's':
-                current_motif += nucleac_acid_dict['s']
-            elif letter == 'S':
-                current_motif += nucleac_acid_dict['S']
-            elif letter == 'm':
-                current_motif += nucleac_acid_dict['m']
-            elif letter == 'M':
-                current_motif += nucleac_acid_dict['M']
-            elif letter == 'k':
-                current_motif += nucleac_acid_dict['k']
-            elif letter == 'K':
-                current_motif += nucleac_acid_dict['K']
-            elif letter == 'r':
-                current_motif += nucleac_acid_dict['r']
-            elif letter == 'R':
-                current_motif += nucleac_acid_dict['R']
-            elif letter == 'w':
-                current_motif += nucleac_acid_dict['w']
-            elif letter == 'W':
-                current_motif += nucleac_acid_dict['W']
-            else:
-                current_motif += letter
+            current_motif += nucleac_acid_dict[letter]
 
         LIST_OF_GIVEN_MOTIF_EXPRESSIONS.append(current_motif)
         LIST_OF_GIVEN_MOTIF_LENGTHS.append(current_length)
@@ -101,7 +76,7 @@ with open(FASTA_FILE, 'r') as fastaFile:
             count += 1
 
 
-drawer_object = drawer(LIST_OF_MOTIF_OBJECTS, NUMBER_OF_MOTIFS)
+drawer_object = drawer(LIST_OF_MOTIF_OBJECTS, NUMBER_OF_MOTIFS, LIST_OF_GIVEN_MOTIFS)
 drawer_object.draw()
 
 # print(LIST_OF_MOTIF_OBJECTS[0].exon_coordinates)
