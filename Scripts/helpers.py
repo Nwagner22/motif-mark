@@ -14,6 +14,17 @@ import re
 
 
 def find_motifs(sequence, list_of_motif_expressions, list_of_motif_lengths):
+    """
+    This function is responsible for getting all of the coordinates for each
+    of the motifs. It does this by using a sliding window technique for each of
+    the motifs and respective lengths. Each time it changes position it uses
+    regex to check and see if the current window is equal to the regex expression
+    built in motif_mark.py. If the regex returns not NULL then it stores the start,
+    stop position as well as what type of motif in a tuple and appends it to a list.
+
+    :param: sequence <string> - one-line sequence from the current
+            record in the fasta file
+    """
     list_of_motif_coords = []
     list_of_motifs = []
     list_of_counts = []
@@ -39,15 +50,19 @@ def find_motifs(sequence, list_of_motif_expressions, list_of_motif_lengths):
 
 
 def find_exon(sequence):
+    """
+    This function is responsible for using regex to pull out the
+    start and stop positions where the upper case letters are in 
+    the sequence line. These upper case letters represent the exon.
+
+    :param: sequence <string> - one-line sequence from the current
+            record in the fasta file
+    """
     list_of_exon_indexes = []
     count = 0
 
     re_search = re.search('[A-Z]{2,5000}', sequence)
     list_of_exon_indexes.append(re_search.span())
-
-    # for i in range(len(sequence)):
-    #     if sequence[i].isupper() == True:
-    #         list_of_exon_indexes.append(i)
 
     return list_of_exon_indexes
 

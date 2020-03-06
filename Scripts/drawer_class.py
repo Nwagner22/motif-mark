@@ -1,4 +1,12 @@
 
+"""
+Nick Wagner
+2/17/20
+
+drawer class that handles all of the motif class objects and outputs a svg
+file with a drawing illustrating all of the motif findings per record
+"""
+
 import cairo
 import math
 
@@ -20,11 +28,22 @@ class drawer:
         self.list_of_motifs = given_motifs
 
     
-    def draw(self):
+    def draw(self, output_file):
+        """
+        This function handles the bulk of the drawing. It starts by changing the
+        background color to white. I then create my own custom color pallette depending
+        on how many motifs were given. I then create a legend utilizing the color pallette
+        and the information about how many motifs were given and their sequences. Then I 
+        loop through all of the motif objects and draw their respective sequence line,
+        exon, and all of the motifs.
+
+        :param: output_file <string> - string given by the user to specify what the .svg
+        output file should be named. DEFALUT: motif_output.svg
+        """
         self.calc_width()
         self.calc_height()
 
-        surface = cairo.SVGSurface("motifs.svg", self.width, self.height)
+        surface = cairo.SVGSurface(output_file, self.width, self.height)
         ctx = cairo.Context(surface)
 
         ## change background color
@@ -36,8 +55,9 @@ class drawer:
         line_spacing = 125
         line_depth = 125
         header_depth = 75
+        left_spacing = 35
 
-        ## Create color palette
+        ## Create custom color palette
         color_palette = [[],[],[]]
         num_colors_per = self.number_of_motifs//3
         max_num_colors_per = self.number_of_motifs - (2 * num_colors_per)
@@ -51,8 +71,8 @@ class drawer:
             else:
                 for k in range(1,num_colors_per + 1):
                     color_palette[i].append(k*gradient)
-        print(max_num_colors_per)
-        print(color_palette)
+        # print(max_num_colors_per)
+        # print(color_palette)
 
 
         ## Legend
@@ -79,10 +99,11 @@ class drawer:
                     ctx.set_source_rgb(0,color_palette[i][j],0)
                 if i == 2:
                     ctx.set_source_rgb(0,0,color_palette[i][j])
+                ctx.set_line_width(3)
                 ctx.stroke()
 
                 ctx.move_to((x_legend + legend_line_length) + 10, y_legend + (count*15))
-                ctx.set_font_size(10)
+                ctx.set_font_size(11)
                 ctx.select_font_face("Arial",cairo.FONT_SLANT_NORMAL,cairo.FONT_WEIGHT_NORMAL)
                 ctx.set_source_rgb(0,0,0)
                 ctx.show_text(self.list_of_motifs[count-1])
@@ -101,8 +122,8 @@ class drawer:
             width_left = self.width - current_length_of_seq - self.width_of_legend
             
             ## Draw main sequence line
-            ctx.move_to(width_left/2,(i*line_spacing) + line_depth)  
-            ctx.line_to((width_left/2) + current_length_of_seq,(i*line_spacing) + line_depth)
+            ctx.move_to(left_spacing,(i*line_spacing) + line_depth)  
+            ctx.line_to(left_spacing + current_length_of_seq,(i*line_spacing) + line_depth)
             ctx.set_source_rgb(0,0,0)
             ctx.set_line_width(2)
             ctx.stroke()
@@ -112,7 +133,7 @@ class drawer:
             # ctx.line_to((width_left/2) + current_exon_coords[0][1],(i*512) + 50)
             # ctx.set_source_rgb(0,0,0)
             # ctx.set_line_width(30)
-            x1 = (width_left/2) + current_exon_coords[0][0]
+            x1 = left_spacing + current_exon_coords[0][0]
             y1 = (i*line_spacing) + line_depth - 20
             rec_width = current_exon_coords[0][1] - current_exon_coords[0][0]
             rec_height = 40
@@ -122,8 +143,8 @@ class drawer:
 
             ## Loop to draw all motifs
             for j in range(len(current_motif_coords)):
-                ctx.move_to((width_left/2) + current_motif_coords[j][0],(i*line_spacing) + line_depth)  
-                ctx.line_to((width_left/2) + current_motif_coords[j][0] + 2,(i*line_spacing) + line_depth)
+                ctx.move_to(left_spacing + current_motif_coords[j][0],(i*line_spacing) + line_depth)  
+                ctx.line_to(left_spacing + current_motif_coords[j][0] + 2,(i*line_spacing) + line_depth)
                 motif_num = current_motif_coords[j][2]
                 if(motif_num < num_colors_per):
                     ctx.set_source_rgb(color_palette[0][motif_num],0,0)
@@ -135,7 +156,7 @@ class drawer:
                 ctx.stroke()
 
             ## adding header text
-            ctx.move_to(width_left/2, (i*line_spacing) + header_depth)
+            ctx.move_to(left_spacing, (i*line_spacing) + header_depth)
             ctx.set_font_size(17)
             ctx.select_font_face("Arial",cairo.FONT_SLANT_NORMAL,cairo.FONT_WEIGHT_NORMAL)
             ctx.set_source_rgb(0,0,0)
@@ -167,7 +188,12 @@ class drawer:
 
 
     def calc_width(self):
-
+        """
+        This function calculates the width of the page by looping through
+        all of the motif objects and figuring out the longest sequence.
+        It also adds extra space for clarity as well as space for the
+        width of the legend.
+        """
         current_longest = 0
 
         for i in range(len(self.list_of_motif_objects)):
@@ -181,6 +207,11 @@ class drawer:
 
 
     def calc_height(self):
+        """
+        This function calculates the height of the page by multiplying
+        the number of records by the designated height per record listed
+        at the top of the class
+        """
         num_records = len(self.list_of_motif_objects)
 
         self.height = num_records * self.page_height
