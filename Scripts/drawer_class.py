@@ -76,10 +76,6 @@ class drawer:
 
 
         ## Legend
-        # ctx.rectangle((self.width/2) + 100, 15, 200, 50)
-        # ctx.set_source_rgb(0,0,0)
-        # ctx.set_line_width(1)
-        # ctx.stroke()
         x_legend = self.width - self.width_of_legend
         y_legend = 75
         legend_width = 145
@@ -129,10 +125,6 @@ class drawer:
             ctx.stroke()
 
             ## Draw the exon
-            # ctx.move_to((width_left/2) + current_exon_coords[0][0],(i*512) + 50)  
-            # ctx.line_to((width_left/2) + current_exon_coords[0][1],(i*512) + 50)
-            # ctx.set_source_rgb(0,0,0)
-            # ctx.set_line_width(30)
             x1 = left_spacing + current_exon_coords[0][0]
             y1 = (i*line_spacing) + line_depth - 20
             rec_width = current_exon_coords[0][1] - current_exon_coords[0][0]
