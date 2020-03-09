@@ -1,6 +1,4 @@
 __pycache__
 Motif_mark.pdf
-Output/
-Scripts/test.png
-Scripts/motifs.svg
+Output/motif_with_seq.svg
 .vscode
