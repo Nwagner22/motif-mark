@@ -9,6 +9,7 @@ file with a drawing illustrating all of the motif findings per record
 
 import cairo
 import math
+import sys
 
 class drawer:
 
@@ -79,7 +80,7 @@ class drawer:
         x_legend = self.width - self.width_of_legend
         y_legend = 75
         legend_width = 145
-        legend_height = self.number_of_motifs * 18
+        legend_height = (self.number_of_motifs * 15) + 8
         ctx.rectangle(x_legend,y_legend,legend_width,legend_height)
         ctx.set_source_rgb(0,0,0)
         ctx.stroke()
@@ -105,8 +106,6 @@ class drawer:
                 ctx.show_text(self.list_of_motifs[count-1])
 
                 count += 1
-
-
 
         for i in range(len(self.list_of_motif_objects)):
             current_motif_obj = self.list_of_motif_objects[i]
