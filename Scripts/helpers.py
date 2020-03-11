@@ -61,11 +61,7 @@ def find_exon(sequence):
     list_of_exon_indexes = []
     count = 0
 
-    re_search = re.search('[A-Z]{2,5000}', sequence)
+    re_search = re.search('[A-Z]{2,25000}', sequence)
     list_of_exon_indexes.append(re_search.span())
 
-    return list_of_exon_indexes
-
-
-
-    
+    return list_of_exon_indexes   
