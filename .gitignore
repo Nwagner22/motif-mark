@@ -2,3 +2,5 @@ __pycache__
 Motif_mark.pdf
 Output/motif_with_seq.svg
 .vscode
+Output/large_test.svg
+Data/test_motifs.txt
